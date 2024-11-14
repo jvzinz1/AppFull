@@ -1,11 +1,13 @@
-import {createServer} from 'node:http'
+import Express from "express";
+import cors from "cors"
+import {rotas} from "./roteamento/authRoute.js"
 
 
-const servidor = createServer((request, response) => {
-    console.log('qualquer coisa')
-    response.write('ta funcionando')
+const app = Express()
+app.use(Express.json())
+app.use(cors())
+//criarTabelas()
 
-    return response.end()
-})
+app.use('/autenticacao', rotas)
 
-servidor.listen(8000)
+app.listen(8002)
