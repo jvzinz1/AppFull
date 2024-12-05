@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { View, Text, TextInput, Pressable, StyleSheet, SafeAreaView, Image } from "react-native";
-
+import {Link} from 'expo-router'
     
 export default Login = () => {
     //const email = ''
@@ -13,7 +13,7 @@ export default Login = () => {
             console.log('Todos os campos devem ser preenchidos')
             return
         }
-        const resposta = await fetch('http://localhost:8002/login',{
+        const resposta = await fetch('http://localhost:8000/login',{
             method: 'POST',
             headers: {
             Accept: 'application/json',
@@ -62,9 +62,11 @@ return (
             </View>
 
            <View style={style.botaoEntrar}>
+                <Link href={'/TelaInicial'}>
                 <Pressable onPress={LoginUsuario}>
                     <Text style={style.textoBotao}>Entrar</Text>
                 </Pressable>
+                </Link>
             </View>
 
         </View>

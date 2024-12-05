@@ -1,7 +1,12 @@
-import {rotas} from './authRoute'
-import {controlUser} from '../Controlador/userControl'
+import express from 'express'
+import {pegar_usuario, listar_usuarios, deletar_usuario, trocar_img} from '../Controlador/userControl.js'
 
-const listaUsuarios = express.Router()
-listaUsuarios.get('./controlUser', controlUser)
+const rotas_users = express.Router()
 
-export {listaUsuarios}
+rotas_users.get('/:id', pegar_usuario)
+rotas_users.get('/', listar_usuarios)
+rotas_users.delete('/:id', deletar_usuario)
+rotas_users.post('/trocar-img/:id', trocar_img)
+
+
+export { rotas_users }

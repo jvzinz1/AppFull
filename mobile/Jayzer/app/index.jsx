@@ -1,165 +1,144 @@
-import { useState } from "react";
-import { View, Text, TextInput, Pressable, StyleSheet, SafeAreaView, Image} from "react-native";
-import {Link} from 'expo-router'
-    
-export default SinUp = () => {
-    //const email = ''
+import React, { useState, useEffect, useContext } from 'react'
+import { View, Text, StyleSheet, TextInput, Image, ScrollView, Pressable } from 'react-native'
+import { Link, router } from 'expo-router'
 
+export default registro = () => {
     const [email, setEmail] = useState('')
+    const [senha, setSenha] = useState('')
+    const [senha2, setSenha2] = useState('')
     const [nome, setNome] = useState('')
     const [sobrenome, setSobrenome] = useState('')
-    const [dataNascimento, setDataNascimento] = useState('')
-    const [senha, setSenha] = useState('')
+    const [dataNascimento, setdataNascimento] = useState('')
+    const [senhaIgual, setSenhaIgual] = useState(false)
+    const [mensagem, setMensagem] = useState('')
 
-    const registrarUsuario = async function () {
-        if (!nome || !email || !senha || !sobrenome || !dataNascimento) {
-            console.log('Todos os campos devem ser preenchidos')
-            return
+    const handleSignUp = async () => {
+        if (!email || !senha || !nome || !sobrenome || !dataNascimento) {
+            setMessage('Todos os campos devem ser preenchidos')
+            return;
         }
-        const resposta = await fetch('http://localhost:8002/registro',{
-            method: 'POST',
-            headers: {
-            Accept: 'application/json',
-            'Content-type': 'application/json',
-        },
-            body: JSON.stringify({ nome: nome, email: email, senha: senha, dataNascimento : dataNascimento , sobrenome: sobrenome})
-        })
-        
-    if (!resposta) {
-        console.log('erro')
-    } else if (resposta.status == 200) {
-        console.log('user criado com sucesso')
-    } else {
-        console.log('ocorreu um erro')
+        try {
+            const response = await fetch('http://localhost:8000/registro', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email: email, senha: senha, nome:nome, sobrenome:sobrenome, dataNascimento: dataNascimento })
+            });
+            console.log(response)
+            if (response.status === 200) {
+                setMensagem('Signup successfully!');
+                router.push('/')
+            } else if (response.status === 409) {
+                setMensagem('Email already exists');
+            } else {
+                setMensagem('An error occurred, try again');
+            }
+        } catch (error) {
+            setMensagem('Error during signup. Please try again.');
+        }
+    };
+
+    const handleSenha = () => {
+        return
     }
-}
 
-
-return (
-    <SafeAreaView style={style.body}>
-         <View >
-            <Image style={style.imageJayzer} source={require('./assets/Jayzer.png' )}/>
-        </View>
-        <View style={style.botaotexto}>
-            <Text style={style.texto}>Registro</Text>
-        </View>
-        <View>  
-        <TextInput
-                style={style.input}
-                onChangeText={(text) => setNome(text)}
-                value={nome}
-                placeholder="Digite seu Nome"
-            />
-            <TextInput
-                style={style.input}
-                onChangeText={(text) => setSobrenome(text)}
-                value={sobrenome}
-                placeholder="Seu sobrenome"
-            />
-            <TextInput
-                style={style.input}
-                onChangeText={(text) => setDataNascimento(text)}
-                value={dataNascimento}
-                placeholder="Data de Nascimento(dia/mês/ano)"
-                keyboardType="numeric"
-            />
-            <TextInput
-                style={style.input}
-                onChangeText={(text) => setEmail(text)}
-                value={email}
-                placeholder="Digite seu email"
-            />
-            <TextInput
-                style={style.input}
-                onChangeText={(text) => setSenha(text)}
-                value={senha}
-                placeholder="Sua senha"
-                secureTextEntry={true}
-            />
-
-           <View style={style.botao}>
-           <Link href={'/Login'}>
-                <Pressable onPress={registrarUsuario}>
-                    <Text style={style.textoCadastro}>Cadastrar</Text>
+    return (
+        <View style={styles.container}>
+            <View style={styles.inputContainer}>
+                <Text> Faça parte do Jayzer </Text>
+                <TextInput
+                    placeholder='Insira seu nome'
+                    style={styles.inputTextBox}
+                    onChangeText={setNome}
+                    value={nome}
+                />
+                <TextInput
+                    placeholder='Insira seu sobrenome'
+                    style={styles.inputTextBox}
+                    onChangeText={setSobrenome}
+                    value={sobrenome}
+                />
+                <TextInput
+                    placeholder='Insira data de nascimento'
+                    style={styles.inputTextBox}
+                    onChangeText={setdataNascimento}
+                    value={dataNascimento}
+                />
+                <TextInput
+                    placeholder='email'
+                    style={styles.inputTextBox}
+                    onChangeText={setEmail}
+                    value={email}
+                    inputMode='email'
+                    keyboardType='email-address'
+                />
+                <TextInput
+                    placeholder='senha'
+                    style={styles.inputTextBox}
+                    onChangeText={setSenha}
+                    value={senha}
+                    secureTextEntry={true}
+                />
+                <Pressable onPress={handleSignUp} style={styles.buttonStyle}>
+                    <Text style={styles.changeImageText}>Registre-se</Text>
                 </Pressable>
-            </Link>
-            </View>
-            <View style={style.botaoPossui}>
-                <Link href={'/Login'}>
-                <Pressable>
-                    <Text style={style.JaPossui}>Já possui Cadastro</Text>
-                </Pressable>
+                <Text style={styles.textBox}>
+                    Já possui uma conta?
+                </Text>
+                <Link href='../'>
+                    <Text style={styles.textBox}>
+                        Login
+                    </Text>
                 </Link>
             </View>
-
         </View>
-    </SafeAreaView>
-
-)
+    )
 }
 
-const style = StyleSheet.create({
-    input:{
-        backgroundColor:'white',
-        padding:'5px',
-        margin:'10px',
-        width:'300px',
-        borderRadius:'30px',
-        borderColor: 'aqua',
-        borderWidth : '2px',
-        justifyContent:'center',
-        
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'space-evenly'
     },
-    body:{
+    logo: {
+        width: 100,
+        height: 100,
+        borderRadius: 20,
+    },
+    inputTextBox: {
+        backgroundColor: 'antiquewhite',
+        margin: 10,
+        padding: 10,
+        borderRadius: 10,
+        placeholderTextColor: 'lightgray'
+    },
+    textBox: {
+        fontSize: 11,
+        marginTop:10
+    },
+    inputContainer: {
+        alignItems: 'center'
+    },
+    buttonStyle:{
+        backgroundColor: 'rgb(255, 135, 46)',
+        padding:10,
+        width:'85%',
         alignItems:'center',
-        backgroundColor: 'black',
-        flex:1,
-        justifyContent:'center'
+        borderRadius:10,
     },
-    
-    texto:{
-        color:'white',
-        textAlign:'center',
-        textShadowColor:'aqua',
-        textShadowRadius:'15px',
-        fontSize:'30px',
-        textAlign:'center',
+    background: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        height: '100%',
     },
-    botao:{
-        padding:'15px',
-        margin:'10px',
-        width:'300px',
-        borderRadius:'30px',
-        borderColor: 'aqua',
-        borderWidth : '2px',
-        backgroundColor:'#1693a5',
-        alignItems:'center',
+    changeImageText: {
+        color: '#fff',
+        fontWeight: 'bold',
+        fontSize: 16,
     },
-    textoCadastro:{
-        color:"white",
-        textAlign:'center',
-        color:'white',
-        textAlign:'center',
-        textShadowColor:'aqua',
-        textShadowRadius:'15px',
-        fontSize:'20px',
-        textAlign:'center',
-
-    },
-    imageJayzer:{
-        alignItems:'center',
-        height:'200px',
-        width:'300px',
-        padding :'5px',
-    },
-    JaPossui:{
-        color:'white',
-        fontSize:'15px',
-        textAlign:'center',
-        padding:'1px',
-        textDecorationColor:'aqua',
-        textDecorationStyle:'solid',
-        textDecorationLine: 'underline',
-    }
-
 })

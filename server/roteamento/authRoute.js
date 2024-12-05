@@ -1,9 +1,11 @@
-import {login, registro} from "../Controlador/authControl.js"
-import express from "express"
+import express from 'express'
+import {registro, login, change_password} from '../Controlador/authControl.js'
+
 
 const rotas = express.Router()
 
-rotas.post('./registro', registro)
-rotas.post('./login', login)
+rotas.post('/registro', registro)
+rotas.post('/login', login)
+rotas.put('/change-password/:id', change_password)
 
-export {rotas}
+export { rotas }
